@@ -1,0 +1,19 @@
+django
+pymysql
+cryptography==2.8
+
+djangorestframework
+djangorestframework-jwt
+django-filter
+django-cors-headers
+
+
+celery
+sentry-sdk==0.10.2
+
+django-redis
+django-mdeditor
+drf-extensions
+markdown
+
+# pillow

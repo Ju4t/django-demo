@@ -1,0 +1,103 @@
+version: "3.8"
+services:
+  django:
+    build:
+      context: .
+      dockerfile: Dockerfile
+#      target: dev
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - 8000:8000
+    volumes:
+      - ./:/app
+    networks:
+      - vlan100
+    env_file: .env
+#    environment:
+#      - PRODUCT=1
+    depends_on:
+      - mysql
+      - redis
+      - rabbitmq
+    restart: always
+
+  worker:
+#    deploy:
+#      replicas: 2
+#      update_config:
+#        parallelism: 2
+#        delay: 10s
+#      restart_policy:
+#        condition: on-failure
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A core worker -l info
+    volumes:
+      - ./:/app
+    networks:
+      - vlan100
+    env_file: .env
+    depends_on:
+      - mysql
+      - redis
+      - rabbitmq
+    restart: always
+
+  mysql:
+    image: "mysql"
+    container_name: "mysql"
+    environment:
+      MYSQL_ROOT_PASSWORD: "ROOT_PASSWORD"
+#      MYSQL_DATABASE: "dev"
+#      MYSQL_USER: "dev"
+#      MYSQL_PASS: "dev"
+    restart: always
+    networks:
+      - vlan100
+    ports:
+      - 3306:3306
+    volumes:
+      - /Volumes/DB/mysql:/var/lib/mysql
+
+  redis:
+    image: "redis:alpine"
+    container_name: "redis"
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - 6379:6379
+    volumes:
+      - /Volumes/DB/redis:/data
+    networks:
+      - vlan100
+
+  rabbitmq:
+    image: "rabbitmq:management"
+    container_name: "rabbitmq"
+    ports:
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - vlan100
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+
+  elasticsearch:
+    image: elasticsearch:5.5.1
+    container_name: elasticsearch
+    restart: always
+    mem_limit: 2G
+    networks:
+      - vlan100
+    ports:
+      - 9200:9200
+      - 9300:9300
+#    volumes:
+#      - /Volumes/DB/elasticsearch/config/elasticsearch.yml:/work/elasticsearch-5.5.1/config/elasticsearch.yml
+#      - /Volumes/DB/elasticsearch:/work/elasticsearch-5.5.1/data
+#      - /Volumes/DB/elasticsearch:/work/elasticsearch-5.5.1/logs
+
+networks:
+  vlan100:
+    driver: bridge
