@@ -9,7 +9,7 @@
 - RabbitMQ
 - ElasticSearch
 
-# 整齐
+# 拉起
 
 ```bash
 docker compose -f docker-compose.yaml up -d
