@@ -1,8 +1,8 @@
 FROM python:alpine
 
-LABEL maintainer="235620@qq.com"
+LABEL maintainer="敬晓兵<Ju4t@qq.com>"
 LABEL org.opencontainers.image.title="django-test"
-LABEL org.opencontainers.image.authors="235620@qq.com"
+LABEL org.opencontainers.image.authors="Ju4t@qq.com"
 
 ENV PYTHONUNBUFFERED 1
 ENV MIRRORS https://mirrors.aliyun.com
